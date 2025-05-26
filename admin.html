@@ -102,19 +102,14 @@
                     <label style="font-weight:600;">Keterangan <span style="font-weight:400;font-size:0.9em;">(opsional)</span></label>
                     <textarea id="keteranganKamar" class="input-kamar" style="width:100%;margin-bottom:12px;resize:vertical;" rows="2" placeholder="Keterangan kamar..."></textarea>
                     <div style="display:flex;gap:12px;justify-content:flex-end;margin-top:18px;">
-                        <button type="submit" style="background:#43a047;color:#fff;border:none;padding:8px 22px;border-radius:7px;font-size:1em;font-weight:600;">Simpan</button>
-                        <button type="button" onclick="closeFormKamar()" style="background:#bdbdbd;color:#333;border:none;padding:8px 22px;border-radius:7px;font-size:1em;font-weight:600;">Batal</button>
+                        <button type="submit" style="background:#43a047;color:#fff;border:none;padding:8px 22px;border-radius:7px;font-size:1em;font-weight:600;">Submit</button>
+                        <button type="button" onclick="closeFormKamar()" style="background:#bdbdbd;color:#333;border:none;padding:8px 22px;border-radius:7px;font-size:1em;font-weight:600;">Clear</button>
                     </div>
                 </form>
                 <div style="flex:1;min-width:260px;max-width:350px;">
                     <h3 style="margin-top:0;margin-bottom:18px;font-weight:700;color:#2979ff;">Fasilitas Kamar</h3>
                     <form id="form-fasilitas" onsubmit="return false;">
                         <div id="fasilitas-list"></div>
-                        <button type="button" onclick="tambahFasilitas()" style="background:#2979ff;color:#fff;border:none;padding:6px 16px;border-radius:6px;font-size:0.95em;margin-top:8px;margin-bottom:18px;">+ Tambah Fasilitas</button>
-                        <div style="display:flex;gap:12px;">
-                            <button type="button" onclick="submitFormKamar()" style="background:#43a047;color:#fff;border:none;padding:8px 22px;border-radius:7px;font-size:1em;font-weight:600;">Submit</button>
-                            <button type="button" onclick="clearFasilitas()" style="background:#bdbdbd;color:#333;border:none;padding:8px 22px;border-radius:7px;font-size:1em;font-weight:600;">Clear</button>
-                        </div>
                     </form>
                 </div>
             </div>
@@ -137,15 +132,23 @@
             document.getElementById('form-kamar-modal').style.display = 'flex';
             document.getElementById('form-kamar').reset();
             clearFasilitas();
+            
+            // Menambahkan daftar fasilitas default
+            tambahFasilitas('Kamar Mandi Dalam', false);
+            tambahFasilitas('Free Wifi', false);
+            tambahFasilitas('TV', false);
+            tambahFasilitas('AC', false);
+            tambahFasilitas('Lemari', false);
+            
             if(mode === 'edit') {
                 document.getElementById('nomorKamar').value = '001';
                 document.getElementById('hargaKamar').value = '450000';
                 document.getElementById('keteranganKamar').value = 'Cukup 3 orang';
-                tambahFasilitas('Kamar Mandi Dalam', true);
-                tambahFasilitas('Kipas Angin', true);
-                tambahFasilitas('Kasur', true);
-                tambahFasilitas('Free Wifi', false);
-                tambahFasilitas('TV', false);
+                // Update checkbox status for existing facilities
+                var facilityInputs = document.querySelectorAll('#fasilitas-list input[type="checkbox"]');
+                facilityInputs[0].checked = true; // Kamar Mandi Dalam
+                facilityInputs[1].checked = true; // Kipas Angin
+                facilityInputs[2].checked = true; // Kasur
             }
         }
         function closeFormKamar() {
@@ -164,23 +167,13 @@
             var text = document.createElement('input');
             text.type = 'text';
             text.value = val || '';
-            text.placeholder = 'Nama fasilitas';
+            text.readOnly = true;
             text.style.marginRight = '8px';
             text.style.borderRadius = '5px';
             text.style.border = '1px solid #ccc';
             text.style.padding = '3px 8px';
-            var btn = document.createElement('button');
-            btn.type = 'button';
-            btn.innerHTML = '&#128465;';
-            btn.style.background = '#e53935';
-            btn.style.color = '#fff';
-            btn.style.border = 'none';
-            btn.style.borderRadius = '5px';
-            btn.style.padding = '3px 8px';
-            btn.onclick = function(){ list.removeChild(div); };
             div.appendChild(input);
             div.appendChild(text);
-            div.appendChild(btn);
             list.appendChild(div);
         }
         function clearFasilitas() {
