@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin - Data Kamar</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        body { margin: 0; font-family: 'Segoe UI', sans-serif; background: #f4f8fb; }
+        .sidebar { width: 240px; background: #2979ff; color: #fff; height: 100vh; position: fixed; left: 0; top: 0; padding-top: 30px; }
+        .sidebar h2 { text-align: center; margin-bottom: 40px; font-size: 1.3em; letter-spacing: 1px; }
+        .sidebar ul { list-style: none; padding: 0; }
+        .sidebar ul li { padding: 13px 30px; cursor: pointer; transition: background 0.2s; display: flex; align-items: center; gap: 10px; }
+        .sidebar ul li:hover, .sidebar ul li.active { background: #1565c0; }
+        .sidebar ul .submenu { background: #1e88e5; padding-left: 45px; display: none; }
+        .sidebar ul .submenu.show { display: block; }
+        .main-content { margin-left: 240px; padding: 30px; }
+        .header { background: #fff; padding: 20px 30px; border-radius: 10px; margin-bottom: 30px; box-shadow: 0 2px 8px #0001; display: flex; justify-content: space-between; align-items: center; }
+        .header h1 { margin: 0; font-size: 1.5em; color: #2979ff; }
+        .user-info { display: flex; align-items: center; gap: 10px; }
+        .user-info img { width: 36px; height: 36px; border-radius: 50%; background: #eee; }
+        .table-container { background: #fff; border-radius: 10px; box-shadow: 0 2px 8px #0001; padding: 20px; }
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        th, td { padding: 12px 10px; text-align: left; }
+        th { background: #e3f0ff; color: #2979ff; }
+        tr:nth-child(even) { background: #f8f8f8; }
+        .status-belum { color: #fff; background: #e53935; padding: 4px 10px; border-radius: 6px; font-size: 0.9em; }
+        .btn-tambah { background: #6c63ff; color: #fff; border: none; padding: 8px 18px; border-radius: 5px; cursor: pointer; font-size: 1em; float: right; margin-bottom: 10px; }
+        .btn-tambah:hover { background: #2979ff; }
+        .btn-edit { background: #43a047; color: #fff; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer; margin-right: 5px; }
+        .btn-hapus { background: #e53935; color: #fff; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer; }
+        .status-terpakai { color: #fff; background: #43a047; padding: 4px 10px; border-radius: 6px; font-size: 0.9em; }
+    </style>
+    <script>
+        // Proteksi admin
+        if (localStorage.getItem('role') !== 'admin') {
+            window.location.href = 'login.html';
+        }
+    </script>
+</head>
+<body>
+    <div class="sidebar">
+        <h2>ADMIN</h2>
+        <ul>
+            <li class="active"><span>&#8962;</span> Beranda</li>
+            <li onclick="toggleMaster()"><span>&#9776;</span> Data Master</li>
+            <li class="submenu" id="submenu-master" onclick="setActiveMenu(this)">Data Kamar</li>
+            <li class="submenu" id="submenu-fasilitas" onclick="setActiveMenu(this)">Data Fasilitas</li>
+            <li><span>&#128101;</span> Data Penghuni</li>
+            <li><span>&#128188;</span> Data Penyewaan Kos</li>
+            <li><span>&#128179;</span> Pembayaran</li>
+            <li><span>&#9993;</span> Ajuan</li>
+        </ul>
+    </div>
+    <div class="main-content">
+        <div class="header">
+            <h1>Data Kamar</h1>
+            <div class="user-info">
+                <span>Admin</span>
+                <img src="https://ui-avatars.com/api/?name=Admin" alt="Admin">
+            </div>
+        </div>
+        <div class="table-container">
+            <button class="btn-tambah" onclick="showFormKamar()">Tambah Data</button>
+            <table>
+                <thead>
+                    <tr>
+                        <th>No.</th>
+                        <th>Nomor Kamar</th>
+                        <th>Tarif per Bulan</th>
+                        <th>Jumlah Fasilitas</th>
+                        <th>Status kamar</th>
+                        <th>Keterangan</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>1.</td>
+                        <td>KM-001</td>
+                        <td>Rp 450.000</td>
+                        <td>3 Fasilitas</td>
+                        <td><span class="status-terpakai">Terpakai</span></td>
+                        <td>Cukup 3 orang</td>
+                        <td>
+                            <button class="btn-edit" onclick="showFormKamar('edit')">&#9998;</button>
+                            <button class="btn-hapus">&#128465;</button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <!-- Form Tambah/Ubah Data Kamar -->
+        <div id="form-kamar-modal" style="display:none;position:fixed;top:0;left:0;width:100vw;height:100vh;background:#0008;z-index:10;align-items:center;justify-content:center;">
+            <div style="background:#fff;padding:32px 28px 24px 28px;border-radius:18px;box-shadow:0 8px 32px #0002;min-width:350px;max-width:90vw;display:flex;gap:32px;flex-wrap:wrap;">
+                <form id="form-kamar" style="flex:1;min-width:300px;max-width:400px;">
+                    <h3 style="margin-top:0;margin-bottom:18px;font-weight:700;color:#2979ff;">Form Data Kamar</h3>
+                    <label style="font-weight:600;">Nomor Kamar</label>
+                    <input type="text" id="nomorKamar" class="input-kamar" style="width:100%;margin-bottom:12px;" placeholder="" required>
+                    <label style="font-weight:600;">Harga Kamar per Bulan</label>
+                    <input type="number" id="hargaKamar" class="input-kamar" style="width:100%;margin-bottom:12px;" placeholder="" required>
+                    <label style="font-weight:600;">Keterangan <span style="font-weight:400;font-size:0.9em;">(opsional)</span></label>
+                    <textarea id="keteranganKamar" class="input-kamar" style="width:100%;margin-bottom:12px;resize:vertical;" rows="2" placeholder="Keterangan kamar..."></textarea>
+                    <div style="display:flex;gap:12px;justify-content:flex-end;margin-top:18px;">
+                        <button type="submit" style="background:#43a047;color:#fff;border:none;padding:8px 22px;border-radius:7px;font-size:1em;font-weight:600;">Simpan</button>
+                        <button type="button" onclick="closeFormKamar()" style="background:#bdbdbd;color:#333;border:none;padding:8px 22px;border-radius:7px;font-size:1em;font-weight:600;">Batal</button>
+                    </div>
+                </form>
+                <div style="flex:1;min-width:260px;max-width:350px;">
+                    <h3 style="margin-top:0;margin-bottom:18px;font-weight:700;color:#2979ff;">Fasilitas Kamar</h3>
+                    <form id="form-fasilitas" onsubmit="return false;">
+                        <div id="fasilitas-list"></div>
+                        <button type="button" onclick="tambahFasilitas()" style="background:#2979ff;color:#fff;border:none;padding:6px 16px;border-radius:6px;font-size:0.95em;margin-top:8px;margin-bottom:18px;">+ Tambah Fasilitas</button>
+                        <div style="display:flex;gap:12px;">
+                            <button type="button" onclick="submitFormKamar()" style="background:#43a047;color:#fff;border:none;padding:8px 22px;border-radius:7px;font-size:1em;font-weight:600;">Submit</button>
+                            <button type="button" onclick="clearFasilitas()" style="background:#bdbdbd;color:#333;border:none;padding:8px 22px;border-radius:7px;font-size:1em;font-weight:600;">Clear</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+        function toggleMaster() {
+            var submenu = document.getElementById('submenu-master');
+            var submenu2 = document.getElementById('submenu-fasilitas');
+            submenu.classList.toggle('show');
+            submenu2.classList.toggle('show');
+        }
+        function setActiveMenu(el) {
+            var items = document.querySelectorAll('.sidebar ul li');
+            items.forEach(function(item){ item.classList.remove('active'); });
+            el.classList.add('active');
+        }
+        // Form Tambah/Ubah Data Kamar
+        function showFormKamar(mode) {
+            document.getElementById('form-kamar-modal').style.display = 'flex';
+            document.getElementById('form-kamar').reset();
+            clearFasilitas();
+            if(mode === 'edit') {
+                document.getElementById('nomorKamar').value = '001';
+                document.getElementById('hargaKamar').value = '450000';
+                document.getElementById('keteranganKamar').value = 'Cukup 3 orang';
+                tambahFasilitas('Kamar Mandi Dalam', true);
+                tambahFasilitas('Kipas Angin', true);
+                tambahFasilitas('Kasur', true);
+                tambahFasilitas('Free Wifi', false);
+                tambahFasilitas('TV', false);
+            }
+        }
+        function closeFormKamar() {
+            document.getElementById('form-kamar-modal').style.display = 'none';
+        }
+        function tambahFasilitas(val, checked) {
+            var list = document.getElementById('fasilitas-list');
+            var div = document.createElement('div');
+            div.style.display = 'flex';
+            div.style.alignItems = 'center';
+            div.style.marginBottom = '7px';
+            var input = document.createElement('input');
+            input.type = 'checkbox';
+            input.checked = checked || false;
+            input.style.marginRight = '8px';
+            var text = document.createElement('input');
+            text.type = 'text';
+            text.value = val || '';
+            text.placeholder = 'Nama fasilitas';
+            text.style.marginRight = '8px';
+            text.style.borderRadius = '5px';
+            text.style.border = '1px solid #ccc';
+            text.style.padding = '3px 8px';
+            var btn = document.createElement('button');
+            btn.type = 'button';
+            btn.innerHTML = '&#128465;';
+            btn.style.background = '#e53935';
+            btn.style.color = '#fff';
+            btn.style.border = 'none';
+            btn.style.borderRadius = '5px';
+            btn.style.padding = '3px 8px';
+            btn.onclick = function(){ list.removeChild(div); };
+            div.appendChild(input);
+            div.appendChild(text);
+            div.appendChild(btn);
+            list.appendChild(div);
+        }
+        function clearFasilitas() {
+            document.getElementById('fasilitas-list').innerHTML = '';
+        }
+        function submitFormKamar() {
+            alert('Data kamar berhasil disimpan! (simulasi)');
+            closeFormKamar();
+        }
+    </script>
+</body>
+</html>
