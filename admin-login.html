@@ -95,7 +95,7 @@
             <h1>Admin Login</h1>
             <p>Masuk ke panel administrasi</p>
         </div>
-        <form id="adminLoginForm" action="admin.html">
+        <form id="adminLoginForm">
             <div class="form-group">
                 <label for="username">Username</label>
                 <input type="text" id="username" name="username" pattern="admin" title="Username harus 'admin'" required>
@@ -111,5 +111,21 @@
         </form>
         <a href="Tampilan awal.html" class="back-link">← Kembali ke halaman login</a>
     </div>
+    <script>
+        document.getElementById('adminLoginForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            const errorMessage = document.getElementById('errorMessage');
+            
+            if (username === 'admin' && password === 'admin123') {
+                localStorage.setItem('role', 'admin');
+                window.location.replace('admin.html');
+            } else {
+                errorMessage.style.display = 'block';
+            }
+        });
+    </script>
 </body>
 </html> 
