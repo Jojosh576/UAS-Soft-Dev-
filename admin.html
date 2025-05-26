@@ -7,7 +7,7 @@
     <link rel="stylesheet" href="styles.css">
     <style>
         body { margin: 0; font-family: 'Segoe UI', sans-serif; background: #f4f8fb; }
-        .sidebar { width: 240px; background: #2979ff; color: #fff; height: 100vh; position: fixed; left: 0; top: 0; padding-top: 30px; }
+        .sidebar { width: 240px; background: #2979ff; color: #fff; height: 100vh; position: fixed; left: 0; top: 0; padding-top: 3px; }
         .sidebar h2 { text-align: center; margin-bottom: 40px; font-size: 1.3em; letter-spacing: 1px; }
         .sidebar ul { list-style: none; padding: 0; }
         .sidebar ul li { padding: 13px 30px; cursor: pointer; transition: background 0.2s; display: flex; align-items: center; gap: 10px; }
@@ -36,6 +36,14 @@
         if (localStorage.getItem('role') !== 'admin') {
             window.location.href = 'login.html';
         }
+
+        // Example of storing room data in localStorage
+        const rooms = [
+            { nomor: 'KM-001', status: 'Terpakai' },
+            { nomor: 'KM-002', status: 'Kosong' },
+            { nomor: 'KM-003', status: 'Kosong' }
+        ];
+        localStorage.setItem('rooms', JSON.stringify(rooms));
     </script>
 </head>
 <body>
@@ -82,6 +90,30 @@
                         <td>3 Fasilitas</td>
                         <td><span class="status-terpakai">Terpakai</span></td>
                         <td>Cukup 3 orang</td>
+                        <td>
+                            <button class="btn-edit" onclick="showFormKamar('edit')">&#9998;</button>
+                            <button class="btn-hapus">&#128465;</button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>2.</td>
+                        <td>KM-002</td>
+                        <td>Rp 400.000</td>
+                        <td>2 Fasilitas</td>
+                        <td><span class="status-belum">Kosong</span></td>
+                        <td>Tersedia untuk 2 orang</td>
+                        <td>
+                            <button class="btn-edit" onclick="showFormKamar('edit')">&#9998;</button>
+                            <button class="btn-hapus">&#128465;</button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>3.</td>
+                        <td>KM-003</td>
+                        <td>Rp 500.000</td>
+                        <td>4 Fasilitas</td>
+                        <td><span class="status-belum">Kosong</span></td>
+                        <td>Tersedia untuk 3 orang</td>
                         <td>
                             <button class="btn-edit" onclick="showFormKamar('edit')">&#9998;</button>
                             <button class="btn-hapus">&#128465;</button>
@@ -141,7 +173,7 @@
             tambahFasilitas('Lemari', false);
             
             if(mode === 'edit') {
-                document.getElementById('nomorKamar').value = '001';
+                document.getElementById('nomorKamar').value = 'KM-001';
                 document.getElementById('hargaKamar').value = '450000';
                 document.getElementById('keteranganKamar').value = 'Cukup 3 orang';
                 // Update checkbox status for existing facilities
