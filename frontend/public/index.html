@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Payment System Dashboard</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .card {
+            margin-bottom: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .nav-link {
+            cursor: pointer;
+        }
+        .nav-link:hover {
+            background-color: #f8f9fa;
+        }
+        .table {
+            background-color: white;
+        }
+        .container {
+            padding-top: 20px;
+        }
+    </style>
+</head>
+<body class="bg-light">
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <div class="container">
+            <a class="navbar-brand" href="#">Payment System</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav">
+                    <li class="nav-item">
+                        <a class="nav-link active" onclick="loadRooms()">Rooms</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" onclick="loadPayments()">Payments</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mt-4">
+        <div id="content">
+            <div class="text-center">
+                <h2>Welcome to Payment System Dashboard</h2>
+                <p>Select a menu above to view data</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        async function loadRooms() {
+            try {
+                const response = await fetch('/api/rooms');
+                const data = await response.json();
+                
+                let html = '<h2 class="mb-4">Rooms</h2><div class="row">';
+                if (data.data && data.data.length > 0) {
+                    data.data.forEach(room => {
+                        html += `
+                            <div class="col-md-4">
+                                <div class="card">
+                                    <div class="card-body">
+                                        <h5 class="card-title">Room ${room.roomNumber}</h5>
+                                        <p class="card-text">
+                                            Capacity: ${room.capacity}<br>
+                                            Price: Rp ${room.price.toLocaleString()}<br>
+                                            Status: <span class="badge ${room.status === 'available' ? 'bg-success' : 'bg-danger'}">${room.status}</span>
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+                    });
+                } else {
+                    html += '<div class="col-12"><div class="alert alert-info">No rooms found</div></div>';
+                }
+                html += '</div>';
+                
+                document.getElementById('content').innerHTML = html;
+            } catch (error) {
+                console.error('Error:', error);
+                document.getElementById('content').innerHTML = '<div class="alert alert-danger">Error loading rooms</div>';
+            }
+        }
+
+        async function loadPayments() {
+            try {
+                const response = await fetch('/api/payments');
+                const data = await response.json();
+                
+                let html = '<h2 class="mb-4">Payments</h2>';
+                if (data.data && data.data.length > 0) {
+                    html += '<div class="table-responsive"><table class="table table-striped">';
+                    html += `
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>User ID</th>
+                                <th>Room</th>
+                                <th>Amount</th>
+                                <th>Status</th>
+                                <th>Date</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                    `;
+                    
+                    data.data.forEach(payment => {
+                        html += `
+                            <tr>
+                                <td>${payment.id}</td>
+                                <td>${payment.userId}</td>
+                                <td>${payment.roomNumber}</td>
+                                <td>Rp ${payment.amount.toLocaleString()}</td>
+                                <td><span class="badge ${payment.status === 'approved' ? 'bg-success' : 'bg-warning'}">${payment.status}</span></td>
+                                <td>${new Date(payment.paymentDate).toLocaleDateString()}</td>
+                            </tr>
+                        `;
+                    });
+                    
+                    html += '</tbody></table></div>';
+                } else {
+                    html += '<div class="alert alert-info">No payments found</div>';
+                }
+                
+                document.getElementById('content').innerHTML = html;
+            } catch (error) {
+                console.error('Error:', error);
+                document.getElementById('content').innerHTML = '<div class="alert alert-danger">Error loading payments</div>';
+            }
+        }
+
+        // Load rooms by default
+        loadRooms();
+    </script>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

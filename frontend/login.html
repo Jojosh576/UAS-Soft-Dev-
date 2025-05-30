@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Aplikasi Kos-Kosan</title>
+    <link rel="stylesheet" href="/public/css/style.css">
+    <link rel="stylesheet" href="/public/css/login.css">
+</head>
+<body>
+    <div class="container">
+        <div class="form-container">
+            <h2>Login</h2>
+            <form id="loginForm">
+                <div class="form-group">
+                    <label for="logemail">Username</label>
+                    <input type="text" id="logemail" name="logemail" placeholder="Masukkan username" required>
+                </div>
+                <div class="form-group">
+                    <label for="logpass">Password</label>
+                    <input type="password" id="logpass" name="logpass" placeholder="Masukkan password" required>
+                </div>
+                <button type="submit" class="btn">Login</button>
+                <p class="register-link">Belum punya akun? <a href="/register">Register di sini</a></p>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('loginForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const username = document.getElementById('logemail').value;
+            const password = document.getElementById('logpass').value;
+            
+            if (username === 'joshua' && password === 'joshua123') {
+                localStorage.setItem('isLoggedIn', 'true');
+                window.location.href = '/home';
+            } else {
+                alert('Username atau password salah!');
+            }
+        });
+    </script>
+</body>
+</html>

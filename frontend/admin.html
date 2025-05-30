@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin - Data Kamar</title>
+    <link rel="stylesheet" href="../public/css/style.css">
+    <link rel="stylesheet" href="../public/css/admin.css">
+    <script>
+        // Proteksi admin
+        if (localStorage.getItem('role') !== 'admin') {
+            window.location.href = 'login.html';
+        }
+
+        // Example of storing room data in localStorage
+        const rooms = [
+            { nomor: 'KM-001', status: 'Terpakai' },
+            { nomor: 'KM-002', status: 'Kosong' },
+            { nomor: 'KM-003', status: 'Kosong' }
+        ];
+        localStorage.setItem('rooms', JSON.stringify(rooms));
+    </script>
+</head>
+<body>
+    <div class="sidebar">
+        <h2>ADMIN</h2>
+        <ul>
+            <li class="active" onclick="showSection('kamar')"><span>&#8962;</span> Data Kamar</li>
+            <li onclick="showSection('penghuni')"><span>&#128101;</span> Data Penghuni</li>
+            <li onclick="showSection('pembayaran')"><span>&#128179;</span> Pembayaran</li>
+            <li onclick="showSection('ajuan')"><span>&#9993;</span> Ajuan</li>
+        </ul>
+    </div>
+    <div class="main-content">
+        <div class="header">
+            <h1 id="section-title">Data Kamar</h1>
+            <div class="user-info">
+                <span>Admin</span>
+                <img src="https://ui-avatars.com/api/?name=Admin" alt="Admin">
+            </div>
+        </div>
+
+        <!-- Section Data Kamar -->
+        <div id="kamar-section" class="content-section active">
+            <div class="table-container">
+                <button class="btn-tambah" onclick="showFormKamar()">Tambah Data</button>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>No.</th>
+                            <th>Nomor Kamar</th>
+                            <th>Tarif per Bulan</th>
+                            <th>Fasilitas</th>
+                            <th>Status Kamar</th>
+                            <th>Keterangan</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>1.</td>
+                            <td>K-001</td>
+                            <td>Rp 450.000</td>
+                            <td>Kamar Mandi Dalam, AC, TV</td>
+                            <td><span class="status-terpakai">Terpakai</span></td>
+                            <td>Cukup 3 orang</td>
+                            <td>
+                                <button class="btn-edit" onclick="showFormKamar('edit')">&#9998;</button>
+                                <button class="btn-delete" onclick="deleteKamar('K-001')">&#128465;</button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>2.</td>
+                            <td>K-002</td>
+                            <td>Rp 400.000</td>
+                            <td>Kamar Mandi Dalam, AC</td>
+                            <td><span class="status-belum">Kosong</span></td>
+                            <td>Tersedia untuk 2 orang</td>
+                            <td>
+                                <button class="btn-edit" onclick="showFormKamar('edit')">&#9998;</button>
+                                <button class="btn-delete" onclick="deleteKamar('K-002')">&#128465;</button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>3.</td>
+                            <td>K-003</td>
+                            <td>Rp 500.000</td>
+                            <td>Kamar Mandi Dalam, AC, TV, Lemari</td>
+                            <td><span class="status-belum">Kosong</span></td>
+                            <td>Tersedia untuk 3 orang</td>
+                            <td>
+                                <button class="btn-edit" onclick="showFormKamar('edit')">&#9998;</button>
+                                <button class="btn-delete" onclick="deleteKamar('K-003')">&#128465;</button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Section Data Penghuni -->
+        <div id="penghuni-section" class="content-section">
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>No.</th>
+                            <th>Nama</th>
+                            <th>Email</th>
+                            <th>Nomor Telepon</th>
+                            <th>Nomor Kamar</th>
+                            <th>Tanggal Masuk</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>1.</td>
+                            <td>Budi Santoso</td>
+                            <td>budi@example.com</td>
+                            <td>081234567890</td>
+                            <td>K-001</td>
+                            <td>01/03/2024</td>
+                        </tr>
+                        <tr>
+                            <td>2.</td>
+                            <td>Siti Rahayu</td>
+                            <td>siti@example.com</td>
+                            <td>089876543210</td>
+                            <td>K-002</td>
+                            <td>02/03/2024</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Section Pembayaran -->
+        <div id="pembayaran-section" class="content-section">
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>No.</th>
+                            <th>Tanggal</th>
+                            <th>Nama Penghuni</th>
+                            <th>Nomor Kamar</th>
+                            <th>Jumlah</th>
+                            <th>Bukti Pembayaran</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>1.</td>
+                            <td>01/03/2024</td>
+                            <td>Budi Santoso</td>
+                            <td>K-001</td>
+                            <td>Rp 450.000</td>
+                            <td>
+                                <button class="btn-view" onclick="viewPaymentProof('proof1.jpg')">Lihat Bukti</button>
+                            </td>
+                            <td><span class="status-terpakai">Diterima</span></td>
+                        </tr>
+                        <tr>
+                            <td>2.</td>
+                            <td>02/03/2024</td>
+                            <td>Siti Rahayu</td>
+                            <td>K-002</td>
+                            <td>Rp 400.000</td>
+                            <td>
+                                <button class="btn-view" onclick="viewPaymentProof('proof2.jpg')">Lihat Bukti</button>
+                            </td>
+                            <td><span class="status-belum">Menunggu</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Section Ajuan -->
+        <div id="ajuan-section" class="content-section">
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>No.</th>
+                            <th>Tanggal</th>
+                            <th>Nama Penghuni</th>
+                            <th>Nomor Kamar</th>
+                            <th>Jenis</th>
+                            <th>Pesan</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>1.</td>
+                            <td>01/03/2024</td>
+                            <td>Budi Santoso</td>
+                            <td>K-001</td>
+                            <td>Komplain</td>
+                            <td>AC tidak dingin</td>
+                            <td><span class="status-terpakai">Selesai</span></td>
+                        </tr>
+                        <tr>
+                            <td>2.</td>
+                            <td>02/03/2024</td>
+                            <td>Siti Rahayu</td>
+                            <td>K-002</td>
+                            <td>Ajuan</td>
+                            <td>Minta tambah lemari</td>
+                            <td><span class="status-belum">Menunggu</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Form Tambah/Ubah Data Kamar -->
+        <div id="form-kamar-modal">
+            <div class="modal-content">
+                <form id="form-kamar" class="form-section">
+                    <h3>Form Data Kamar</h3>
+                    <label>Nomor Kamar</label>
+                    <input type="text" id="nomorKamar" class="input-kamar" required>
+                    <label>Harga Kamar per Bulan</label>
+                    <input type="number" id="hargaKamar" class="input-kamar" required>
+                    <label>Keterangan <span style="font-weight:400;font-size:0.9em;">(opsional)</span></label>
+                    <textarea id="keteranganKamar" class="input-kamar" rows="2" placeholder="Keterangan kamar..."></textarea>
+                    <div class="form-section">
+                        <h3>Fasilitas Kamar</h3>
+                        <div id="fasilitas-list"></div>
+                    </div>
+                    <div class="form-actions">
+                        <button type="submit">Submit</button>
+                        <button type="button" onclick="closeFormKamar()">Clear</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Modal untuk melihat bukti pembayaran -->
+        <div id="payment-proof-modal" class="modal">
+            <div class="modal-content">
+                <span class="close" onclick="closePaymentProof()">&times;</span>
+                <h3>Bukti Pembayaran</h3>
+                <div id="proof-image-container">
+                    <img id="proof-image" src="" alt="Bukti Pembayaran">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <style>
+        .content-section {
+            display: none;
+        }
+
+        .content-section.active {
+            display: block;
+        }
+
+        .btn-view {
+            background: #3498db;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .btn-view:hover {
+            background: #2980b9;
+        }
+
+        .btn-delete {
+            background: #e74c3c;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-left: 5px;
+        }
+
+        .btn-delete:hover {
+            background: #c0392b;
+        }
+
+        .btn-edit {
+            background: #3498db;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .btn-edit:hover {
+            background: #2980b9;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.7);
+        }
+
+        .modal-content {
+            background-color: #fefefe;
+            margin: 5% auto;
+            padding: 20px;
+            border-radius: 8px;
+            width: 80%;
+            max-width: 600px;
+            position: relative;
+        }
+
+        .close {
+            position: absolute;
+            right: 20px;
+            top: 10px;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        #proof-image-container {
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        #proof-image {
+            max-width: 100%;
+            max-height: 400px;
+        }
+    </style>
+
+    <script>
+        function showSection(sectionName) {
+            // Update active menu item
+            document.querySelectorAll('.sidebar ul li').forEach(item => {
+                item.classList.remove('active');
+            });
+            event.currentTarget.classList.add('active');
+
+            // Update section title
+            const titles = {
+                'kamar': 'Data Kamar',
+                'penghuni': 'Data Penghuni',
+                'pembayaran': 'Pembayaran',
+                'ajuan': 'Ajuan & Komplain'
+            };
+            document.getElementById('section-title').textContent = titles[sectionName];
+
+            // Show selected section
+            document.querySelectorAll('.content-section').forEach(section => {
+                section.classList.remove('active');
+            });
+            document.getElementById(sectionName + '-section').classList.add('active');
+        }
+
+        function setActiveMenu(el) {
+            var items = document.querySelectorAll('.sidebar ul li');
+            items.forEach(function(item){ item.classList.remove('active'); });
+            el.classList.add('active');
+        }
+
+        // Form Tambah/Ubah Data Kamar
+        function showFormKamar(mode) {
+            document.getElementById('form-kamar-modal').style.display = 'flex';
+            document.getElementById('form-kamar').reset();
+            clearFasilitas();
+            
+            // Menambahkan daftar fasilitas default
+            tambahFasilitas('Kamar Mandi Dalam', false);
+            tambahFasilitas('Free Wifi', false);
+            tambahFasilitas('TV', false);
+            tambahFasilitas('AC', false);
+            tambahFasilitas('Lemari', false);
+            
+            if(mode === 'edit') {
+                document.getElementById('nomorKamar').value = 'K-001';
+                document.getElementById('hargaKamar').value = '450000';
+                document.getElementById('keteranganKamar').value = 'Cukup 3 orang';
+                // Update checkbox status for existing facilities
+                var facilityInputs = document.querySelectorAll('#fasilitas-list input[type="checkbox"]');
+                facilityInputs[0].checked = true; // Kamar Mandi Dalam
+                facilityInputs[2].checked = true; // TV
+                facilityInputs[3].checked = true; // AC
+            }
+        }
+
+        function closeFormKamar() {
+            document.getElementById('form-kamar-modal').style.display = 'none';
+        }
+
+        function tambahFasilitas(val, checked) {
+            var list = document.getElementById('fasilitas-list');
+            var div = document.createElement('div');
+            div.style.display = 'flex';
+            div.style.alignItems = 'center';
+            div.style.marginBottom = '7px';
+            var input = document.createElement('input');
+            input.type = 'checkbox';
+            input.checked = checked || false;
+            input.style.marginRight = '8px';
+            var text = document.createElement('input');
+            text.type = 'text';
+            text.value = val || '';
+            text.readOnly = true;
+            text.style.marginRight = '8px';
+            text.style.borderRadius = '5px';
+            text.style.border = '1px solid #ccc';
+            text.style.padding = '3px 8px';
+            div.appendChild(input);
+            div.appendChild(text);
+            list.appendChild(div);
+        }
+
+        function clearFasilitas() {
+            document.getElementById('fasilitas-list').innerHTML = '';
+        }
+
+        function submitFormKamar() {
+            alert('Data kamar berhasil disimpan! (simulasi)');
+            closeFormKamar();
+        }
+
+        function viewPaymentProof(imageSrc) {
+            const modal = document.getElementById('payment-proof-modal');
+            const image = document.getElementById('proof-image');
+            image.src = imageSrc;
+            modal.style.display = 'block';
+        }
+
+        function closePaymentProof() {
+            document.getElementById('payment-proof-modal').style.display = 'none';
+        }
+
+        // Close modal when clicking outside
+        window.onclick = function(event) {
+            const modal = document.getElementById('payment-proof-modal');
+            if (event.target == modal) {
+                modal.style.display = 'none';
+            }
+        }
+    </script>
+</body>
+</html>

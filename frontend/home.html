@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Aplikasi Kos-Kosan</title>
+    <link rel="stylesheet" href="../public/css/style.css">
+    <link rel="stylesheet" href="../public/css/home.css">
+    <script>
+        // Simulasi: redirect ke login jika belum login
+        if (!localStorage.getItem('isLoggedIn')) {
+            window.location.href = 'login.html';
+        }
+    </script>
+</head>
+<body>
+    <div class="sidebar">
+        <h2>Kos Mami Sindu</h2>
+        <ul>
+            <li class="active">Riwayat Pembayaran</li>
+            <li onclick="toggleAjuan()">Ajuan</li>
+            <li onclick="logout()">Logout</li>
+        </ul>
+    </div>
+    <div class="main-content">
+        <div class="header">
+            <h1>Riwayat Pembayaran</h1>
+            <div class="user-info">
+                <span>Joshua Alexander</span>
+                <img src="https://ui-avatars.com/api/?name=Iqbal+Putra" alt="User">
+            </div>
+        </div>
+        <div class="table-container" id="pembayaran-container">
+            <button class="btn-proof toggle" onclick="togglePembayaran()">Lihat/ Sembunyikan Pembayaran</button>
+            <div id="pembayaran-section">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>No.</th>
+                            <th>Kode Sewa</th>
+                            <th>Kamar</th>
+                            <th>Tarif</th>
+                            <th>Status</th>
+                            <th>Bukti</th>
+                            <th>Tanggal</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>1</td>
+                            <td>3DHO41</td>
+                            <td>KM-001</td>
+                            <td>Rp 450.000</td>
+                            <td><span class="status-paid">Sudah Bayar</span></td>
+                            <td><button class="btn-proof">Lihat Bukti</button></td>
+                            <td>2022-09-01</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="table-container" id="ajuan-container" style="display:none;">
+            <form id="form-ajuan" enctype="multipart/form-data" onsubmit="kirimAjuan(event)">
+                <textarea id="pesan-ajuan" rows="7" placeholder="Tulis pengajuan atau aduan Anda..."></textarea>
+                <div>
+                    <label><span class="icon">&#128247;</span> Foto/File/Gambar <span style="font-size:0.85em;">(opsional)</span></label><br>
+                    <input type="file" id="file-ajuan" name="file-ajuan">
+                    <button type="button" onclick="tambahFileAjuan()">+</button>
+                    <div id="file-list"></div>
+                </div>
+                <button type="submit" class="btn-proof submit"><span class="icon">&#9993;</span> Kirim</button>
+            </form>
+        </div>
+    </div>
+    <script>
+        function logout() {
+            localStorage.removeItem('isLoggedIn');
+            window.location.href = 'Tampilan awal.html';
+        }
+        function togglePembayaran() {
+            var section = document.getElementById('pembayaran-section');
+            if(section.style.display === 'none') {
+                section.style.display = 'block';
+            } else {
+                section.style.display = 'none';
+            }
+        }
+        function toggleAjuan() {
+            document.getElementById('pembayaran-container').style.display = 'none';
+            document.getElementById('ajuan-container').style.display = 'block';
+            document.querySelector('.header h1').innerText = 'Saran / Aduan';
+        }
+        // Default tampilkan pembayaran
+        document.addEventListener('DOMContentLoaded', function() {
+            document.getElementById('pembayaran-section').style.display = 'block';
+            document.getElementById('pembayaran-container').style.display = 'block';
+            document.getElementById('ajuan-container').style.display = 'none';
+        });
+        // Tambah file input dinamis
+        function tambahFileAjuan() {
+            var fileList = document.getElementById('file-list');
+            var input = document.createElement('input');
+            input.type = 'file';
+            input.name = 'file-ajuan';
+            fileList.appendChild(input);
+        }
+        // Simulasi submit ajuan
+        function kirimAjuan(e) {
+            e.preventDefault();
+            alert('Ajuan/Aduan berhasil dikirim! (simulasi)');
+            document.getElementById('form-ajuan').reset();
+            document.getElementById('file-list').innerHTML = '';
+        }
+    </script>
+</body>
+</html>

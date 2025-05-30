@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register - Aplikasi Kos-Kosan</title>
+    <link rel="stylesheet" href="/public/css/style.css">
+    <link rel="stylesheet" href="/public/css/register.css">
+</head>
+<body>
+    <div class="container">
+        <div class="form-container">
+            <h2>Register</h2>
+            <form id="registerForm">
+                <div class="form-group">
+                    <label for="username">Username</label>
+                    <input type="text" id="username" name="username" required>
+                </div>
+                <div class="form-group">
+                    <label for="email">Email</label>
+                    <input type="email" id="email" name="email" required>
+                </div>
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" name="password" required>
+                </div>
+                <div class="form-group">
+                    <label for="confirm-password">Konfirmasi Password</label>
+                    <input type="password" id="confirm-password" name="confirm-password" required>
+                </div>
+                <div class="form-group">
+                    <label for="phone">Nomor Telepon</label>
+                    <input type="tel" id="phone" name="phone" required>
+                </div>
+                <div class="form-group">
+                    <label for="room">Nomor Kamar</label>
+                    <select id="room" name="room" required>
+                        <option value="">Pilih Nomor Kamar</option>
+                    </select>
+                </div>
+                <button type="submit" class="btn">Register</button>
+                <p class="login-link">Sudah punya akun? <a href="/login">Login di sini</a></p>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Initialize rooms data with K-001 occupied
+        function initializeRooms() {
+            const existingRooms = JSON.parse(localStorage.getItem('rooms') || '[]');
+            if (existingRooms.length === 0) {
+                const initialRooms = [
+                    { nomor: 'K-001', status: 'Terpakai' }
+                ];
+                localStorage.setItem('rooms', JSON.stringify(initialRooms));
+            }
+        }
+
+        // Function to generate room numbers
+        function generateRoomNumbers() {
+            const select = document.getElementById('room');
+            const rooms = JSON.parse(localStorage.getItem('rooms') || '[]');
+            
+            // Clear existing options except the first one
+            while (select.options.length > 1) {
+                select.remove(1);
+            }
+            
+            // Add room options
+            for (let i = 1; i <= 15; i++) {
+                const roomNumber = `K-${String(i).padStart(3, '0')}`;
+                const isOccupied = rooms.some(room => room.nomor === roomNumber && room.status === 'Terpakai');
+                
+                if (!isOccupied) {
+                    const option = document.createElement('option');
+                    option.value = roomNumber;
+                    option.textContent = roomNumber;
+                    select.appendChild(option);
+                }
+            }
+        }
+
+        // Generate room numbers when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeRooms();
+            generateRoomNumbers();
+        });
+
+        document.getElementById('registerForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const password = document.getElementById('password').value;
+            const confirmPassword = document.getElementById('confirm-password').value;
+            
+            if (password !== confirmPassword) {
+                alert('Password dan konfirmasi password tidak cocok!');
+                return;
+            }
+            
+            // Simpan data registrasi ke localStorage
+            const userData = {
+                username: document.getElementById('username').value,
+                email: document.getElementById('email').value,
+                phone: document.getElementById('phone').value,
+                room: document.getElementById('room').value
+            };
+            
+            // Update room status
+            const rooms = JSON.parse(localStorage.getItem('rooms') || '[]');
+            const selectedRoom = userData.room;
+            const roomIndex = rooms.findIndex(room => room.nomor === selectedRoom);
+            
+            if (roomIndex === -1) {
+                rooms.push({ nomor: selectedRoom, status: 'Terpakai' });
+            } else {
+                rooms[roomIndex].status = 'Terpakai';
+            }
+            
+            localStorage.setItem('rooms', JSON.stringify(rooms));
+            localStorage.setItem('userData', JSON.stringify(userData));
+            localStorage.setItem('isLoggedIn', 'true');
+            
+            // Redirect ke halaman home
+            window.location.href = '/home';
+        });
+    </script>
+</body>
+</html>
